@@ -18,6 +18,7 @@ const Quiz = () => {
   const [quizStartTime] = useState(Date.now());
   const [isQuizComplete, setIsQuizComplete] = useState(false);
   const [character, setCharacter] = useState<any>(null);
+  const [displayName, setDisplayName] = useState('');
 
   const completeQuiz = useCallback(async (answers: number[]) => {
     const timeTaken = Math.floor((Date.now() - quizStartTime) / 1000);
@@ -70,9 +71,10 @@ const Quiz = () => {
 
   useEffect(() => {
     const savedCharacter = localStorage.getItem('selectedCharacter');
+    const savedDisplayName = localStorage.getItem('displayName');
     const registrationId = localStorage.getItem('registrationId');
     
-    if (!savedCharacter || !registrationId) {
+    if (!savedCharacter || !registrationId || !savedDisplayName) {
       toast({
         title: "Access Denied",
         description: "Please complete registration and character selection first.",
@@ -83,6 +85,7 @@ const Quiz = () => {
     }
     
     setCharacter(JSON.parse(savedCharacter));
+    setDisplayName(savedDisplayName);
 
     // Tab visibility detection
     const handleVisibilityChange = () => {
@@ -180,7 +183,8 @@ const Quiz = () => {
           <div className="flex items-center space-x-4">
             <div className="text-3xl">{character.avatar}</div>
             <div>
-              <h1 className="text-2xl font-bold">{character.name}</h1>
+              <h1 className="text-2xl font-bold">{displayName}</h1>
+              <p className="text-lg text-muted-foreground">{character.name}</p>
               <p className="text-sm text-muted-foreground">Question {currentQuestionIndex + 1} of {quizQuestions.length}</p>
             </div>
           </div>

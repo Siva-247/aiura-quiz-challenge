@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import { characters, Character } from '@/data/characters';
 import { supabase } from '@/integrations/supabase/client';
@@ -10,6 +12,7 @@ const CharacterSelection = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
+  const [displayName, setDisplayName] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleCharacterSelect = (character: Character) => {
@@ -21,6 +24,15 @@ const CharacterSelection = () => {
       toast({
         title: "No Character Selected",
         description: "Please select a character before starting the quiz.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!displayName.trim()) {
+      toast({
+        title: "Display Name Required",
+        description: "Please enter your display name before starting the quiz.",
         variant: "destructive"
       });
       return;
@@ -48,6 +60,7 @@ const CharacterSelection = () => {
       if (error) throw error;
 
       localStorage.setItem('selectedCharacter', JSON.stringify(selectedCharacter));
+      localStorage.setItem('displayName', displayName.trim());
       navigate('/quiz');
     } catch (error: any) {
       toast({
@@ -69,6 +82,27 @@ const CharacterSelection = () => {
             Select a character that represents your coding style
           </p>
         </div>
+
+        {/* Display Name Input */}
+        <Card className="max-w-md mx-auto mb-8">
+          <CardHeader>
+            <CardTitle>Enter Your Display Name</CardTitle>
+            <CardDescription>This will be shown during the quiz</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <Label htmlFor="displayName">Display Name</Label>
+              <Input
+                id="displayName"
+                type="text"
+                placeholder="Enter your name..."
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                maxLength={50}
+              />
+            </div>
+          </CardContent>
+        </Card>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {characters.map((character) => (

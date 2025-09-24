@@ -42,9 +42,9 @@ export const quizQuestions: QuizQuestion[] = [
   },
   {
     id: 4,
-    question: "#include<iostream>\nusing namespace std;\nint main() {\n    int x = 10;\n    int &ref = x;\n    ref++;\n    cout << x;\n}",
-    options: ["10", "11", "0", "Error"],
-    correctAnswer: 1
+    question: "What is the output of the following C++ code?\n\n#include<iostream>\nusing namespace std;\nint main() {\n    int arr[] = {1, 2, 3, 4, 5};\n    cout << *(arr + 2) << endl;\n    return 0;\n}",
+    options: ["1", "2", "3", "4"],
+    correctAnswer: 2
   },
   {
     id: 5,
