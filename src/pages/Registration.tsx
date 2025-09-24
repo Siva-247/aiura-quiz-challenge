@@ -111,6 +111,8 @@ const Registration = () => {
                     <SelectValue placeholder="Select your department" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="computer-science">Artificial Intelligence and Data Science</SelectItem>
+                    <SelectItem value="computer-science">Artificial Intelligence and Machine Learning</SelectItem>
                     <SelectItem value="computer-science">Computer Science</SelectItem>
                     <SelectItem value="information-technology">Information Technology</SelectItem>
                     <SelectItem value="electronics">Electronics & Communication</SelectItem>
