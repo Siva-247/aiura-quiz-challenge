@@ -14,7 +14,83 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      quiz_results: {
+        Row: {
+          answers: Json
+          completed_at: string
+          id: string
+          registration_id: string
+          score: number
+          time_taken: number | null
+          total_questions: number
+        }
+        Insert: {
+          answers?: Json
+          completed_at?: string
+          id?: string
+          registration_id: string
+          score?: number
+          time_taken?: number | null
+          total_questions?: number
+        }
+        Update: {
+          answers?: Json
+          completed_at?: string
+          id?: string
+          registration_id?: string
+          score?: number
+          time_taken?: number | null
+          total_questions?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_results_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      registrations: {
+        Row: {
+          college_name: string
+          created_at: string
+          department: string
+          email: string
+          id: string
+          name: string
+          phone: string
+          selected_character: string | null
+          updated_at: string
+          year: string
+        }
+        Insert: {
+          college_name: string
+          created_at?: string
+          department: string
+          email: string
+          id?: string
+          name: string
+          phone: string
+          selected_character?: string | null
+          updated_at?: string
+          year: string
+        }
+        Update: {
+          college_name?: string
+          created_at?: string
+          department?: string
+          email?: string
+          id?: string
+          name?: string
+          phone?: string
+          selected_character?: string | null
+          updated_at?: string
+          year?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

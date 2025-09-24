@@ -57,6 +57,11 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        quiz: {
+          success: "hsl(var(--quiz-success))",
+          error: "hsl(var(--quiz-error))", 
+          warning: "hsl(var(--quiz-warning))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
