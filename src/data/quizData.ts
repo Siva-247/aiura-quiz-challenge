@@ -290,5 +290,16 @@ export const quizQuestions: QuizQuestion[] = [
       "[10, 20, 3] [10, 20, 3] [1, 20, 3]"
     ],
     correctAnswer: 0
+  },
+  {
+    id: 30,
+    question: "Which keyword is used to inherit a class in C++?",
+    options: [
+      "implements",
+      "extends", 
+      "inherits",
+      ": (colon)"
+    ],
+    correctAnswer: 3
   }
 ];

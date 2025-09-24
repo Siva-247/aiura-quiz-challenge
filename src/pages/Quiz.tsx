@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,52 +19,7 @@ const Quiz = () => {
   const [isQuizComplete, setIsQuizComplete] = useState(false);
   const [character, setCharacter] = useState<any>(null);
 
-  useEffect(() => {
-    const savedCharacter = localStorage.getItem('selectedCharacter');
-    const registrationId = localStorage.getItem('registrationId');
-    
-    if (!savedCharacter || !registrationId) {
-      toast({
-        title: "Access Denied",
-        description: "Please complete registration and character selection first.",
-        variant: "destructive"
-      });
-      navigate('/register');
-      return;
-    }
-    
-    setCharacter(JSON.parse(savedCharacter));
-  }, [navigate, toast]);
-
-  const currentQuestion = quizQuestions[currentQuestionIndex];
-  const progress = ((currentQuestionIndex + 1) / quizQuestions.length) * 100;
-
-  const handleAnswerSelect = (answerIndex: number) => {
-    setSelectedAnswer(answerIndex);
-  };
-
-  const handleNext = () => {
-    if (selectedAnswer === null) {
-      toast({
-        title: "Select an Answer",
-        description: "Please select an answer before proceeding.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    const newAnswers = [...userAnswers, selectedAnswer];
-    setUserAnswers(newAnswers);
-    setSelectedAnswer(null);
-
-    if (currentQuestionIndex === quizQuestions.length - 1) {
-      completeQuiz(newAnswers);
-    } else {
-      setCurrentQuestionIndex(prev => prev + 1);
-    }
-  };
-
-  const completeQuiz = async (answers: number[]) => {
+  const completeQuiz = useCallback(async (answers: number[]) => {
     const timeTaken = Math.floor((Date.now() - quizStartTime) / 1000);
     const score = answers.reduce((acc, answer, index) => {
       return acc + (answer === quizQuestions[index].correctAnswer ? 1 : 0);
@@ -99,6 +54,101 @@ const Quiz = () => {
         description: "Failed to save quiz results.",
         variant: "destructive"
       });
+    }
+  }, [quizStartTime, navigate, toast]);
+
+  const handleTabSwitch = useCallback(() => {
+    if (!isQuizComplete) {
+      toast({
+        title: "Quiz Ended",
+        description: "Quiz has been ended due to tab switching.",
+        variant: "destructive",
+      });
+      completeQuiz(userAnswers);
+    }
+  }, [isQuizComplete, userAnswers, toast, completeQuiz]);
+
+  useEffect(() => {
+    const savedCharacter = localStorage.getItem('selectedCharacter');
+    const registrationId = localStorage.getItem('registrationId');
+    
+    if (!savedCharacter || !registrationId) {
+      toast({
+        title: "Access Denied",
+        description: "Please complete registration and character selection first.",
+        variant: "destructive"
+      });
+      navigate('/register');
+      return;
+    }
+    
+    setCharacter(JSON.parse(savedCharacter));
+
+    // Tab visibility detection
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        handleTabSwitch();
+      }
+    };
+
+    // Page focus/blur detection
+    const handleBlur = () => {
+      handleTabSwitch();
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('blur', handleBlur);
+
+    // Prevent right-click context menu
+    const preventContextMenu = (e: MouseEvent) => {
+      e.preventDefault();
+    };
+    document.addEventListener('contextmenu', preventContextMenu);
+
+    // Prevent common keyboard shortcuts for copying
+    const preventKeyboardShortcuts = (e: KeyboardEvent) => {
+      if (e.ctrlKey && (e.key === 'c' || e.key === 'a' || e.key === 's' || e.key === 'v')) {
+        e.preventDefault();
+      }
+      if (e.key === 'F12') {
+        e.preventDefault();
+      }
+    };
+    document.addEventListener('keydown', preventKeyboardShortcuts);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('blur', handleBlur);
+      document.removeEventListener('contextmenu', preventContextMenu);
+      document.removeEventListener('keydown', preventKeyboardShortcuts);
+    };
+  }, [navigate, toast, handleTabSwitch]);
+
+  const currentQuestion = quizQuestions[currentQuestionIndex];
+  const progress = ((currentQuestionIndex + 1) / quizQuestions.length) * 100;
+
+  const handleAnswerSelect = (answerIndex: number) => {
+    setSelectedAnswer(answerIndex);
+  };
+
+  const handleNext = () => {
+    if (selectedAnswer === null) {
+      toast({
+        title: "Select an Answer",
+        description: "Please select an answer before proceeding.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const newAnswers = [...userAnswers, selectedAnswer];
+    setUserAnswers(newAnswers);
+    setSelectedAnswer(null);
+
+    if (currentQuestionIndex === quizQuestions.length - 1) {
+      completeQuiz(newAnswers);
+    } else {
+      setCurrentQuestionIndex(prev => prev + 1);
     }
   };
 
@@ -142,7 +192,7 @@ const Quiz = () => {
         </div>
 
         {/* Question Card */}
-        <Card className="mb-6">
+        <Card className="mb-6 quiz-content">
           <CardHeader>
             <CardTitle className="text-xl">
               Q{currentQuestion.id}. 
