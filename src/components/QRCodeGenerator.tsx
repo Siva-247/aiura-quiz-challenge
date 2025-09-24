@@ -1,4 +1,4 @@
-import { QRCodeSVG } from 'qrcode.react';
+import QRCode from 'react-qr-code';
 import { Card, CardContent } from '@/components/ui/card';
 
 interface QRCodeGeneratorProps {
@@ -11,7 +11,7 @@ const QRCodeGenerator = ({ url, size = 200 }: QRCodeGeneratorProps) => {
     <Card className="w-fit mx-auto">
       <CardContent className="p-6">
         <div className="text-center space-y-4">
-          <QRCodeSVG 
+          <QRCode 
             value={url} 
             size={size}
             bgColor="#ffffff"
