@@ -55,7 +55,10 @@ const AdminDashboard = () => {
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (regError) throw regError;
+      if (regError) {
+        console.error('Registration fetch error:', regError);
+        throw regError;
+      }
 
       // Fetch quiz results with registration details
       const { data: resultData, error: resultError } = await supabase
@@ -68,7 +71,10 @@ const AdminDashboard = () => {
         `)
         .order('completed_at', { ascending: false });
 
-      if (resultError) throw resultError;
+      if (resultError) {
+        console.error('Quiz results fetch error:', resultError);
+        throw resultError;
+      }
 
       setRegistrations(regData || []);
       setResults(resultData || []);
