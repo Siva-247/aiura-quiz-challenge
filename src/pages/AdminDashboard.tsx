@@ -44,18 +44,40 @@ const AdminDashboard = () => {
   });
 
   useEffect(() => {
-    const isAuthenticated = localStorage.getItem('adminAuthenticated');
-    if (!isAuthenticated) {
-      toast({
-        title: "Access Denied",
-        description: "Please login as admin first.",
-        variant: "destructive"
-      });
-      navigate('/admin-login');
-      return;
-    }
+    const checkAuthAndFetch = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session?.user) {
+        toast({
+          title: "Access Denied",
+          description: "Please login as admin first.",
+          variant: "destructive"
+        });
+        navigate('/admin-login');
+        return;
+      }
 
-    fetchData();
+      // Check if user has admin role
+      const { data: roles } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', session.user.id)
+        .eq('role', 'admin');
+
+      if (!roles || roles.length === 0) {
+        toast({
+          title: "Access Denied",
+          description: "Admin privileges required.",
+          variant: "destructive"
+        });
+        navigate('/admin-login');
+        return;
+      }
+
+      await fetchData();
+    };
+
+    checkAuthAndFetch();
   }, [navigate, toast]);
 
   const fetchData = async () => {
@@ -109,8 +131,8 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('adminAuthenticated');
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     navigate('/admin-login');
   };
 
