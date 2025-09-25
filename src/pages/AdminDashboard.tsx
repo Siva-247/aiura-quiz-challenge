@@ -44,41 +44,8 @@ const AdminDashboard = () => {
   });
 
   useEffect(() => {
-    const checkAuthAndFetch = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session?.user) {
-        toast({
-          title: "Access Denied",
-          description: "Please login as admin first.",
-          variant: "destructive"
-        });
-        navigate('/admin-login');
-        return;
-      }
-
-      // Check if user has admin role
-      const { data: roles } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', session.user.id)
-        .eq('role', 'admin');
-
-      if (!roles || roles.length === 0) {
-        toast({
-          title: "Access Denied",
-          description: "Admin privileges required.",
-          variant: "destructive"
-        });
-        navigate('/admin-login');
-        return;
-      }
-
-      await fetchData();
-    };
-
-    checkAuthAndFetch();
-  }, [navigate, toast]);
+    fetchData();
+  }, []);
 
   const fetchData = async () => {
     try {
@@ -131,8 +98,7 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
+  const handleLogout = () => {
     navigate('/admin-login');
   };
 
