@@ -94,9 +94,10 @@ const AdminDashboard = () => {
       });
 
     } catch (error: any) {
+      console.error('Failed to fetch admin data:', error);
       toast({
         title: "Error",
-        description: "Failed to fetch admin data.",
+        description: error.message || "Failed to fetch admin data.",
         variant: "destructive"
       });
     } finally {
